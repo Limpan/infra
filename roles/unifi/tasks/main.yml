@@ -1,0 +1,25 @@
+---
+- name: Ensure data folders exists.
+  file:
+    dest: "{{ container_path }}/unifi/{{ item }}"
+    state: directory
+  loop:
+    - controller
+    - mongo/data
+
+- name: Copy docker-compose.yml.
+  template:
+    src: "templates/docker-compose.yml.j2"
+    dest: "{{ container_path }}/unifi/docker-compose.yml"
+
+- name: Copy MongoDB init script.
+  template:
+    src: "templates/init-mongo.js.j2"
+    dest: "{{ container_path }}/unifi/mongo/init-mongo.js"
+
+- name: Deploy Unifi Network Application with Docker Compose.
+  community.docker.docker_compose_v2:
+    project_src: "{{ container_path }}/unifi/"
+    files:
+    - docker-compose.yml
+    recreate: always

@@ -1,0 +1,16 @@
+# Linux
+*~
+
+# macOS
+*.DS_Store
+.AppleDouble
+.LSOverride
+
+# Visual Studio Code
+.vscode
+
+# Vagrant
+.vagrant
+
+# Ansible vault
+.vault-password

@@ -1,0 +1,61 @@
+---
+- hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Ensure ansible user exists and is sudoer.
+      user:
+        name=ansible
+        groups=sudo
+        append=yes
+        createhome=yes
+        state=present
+        shell=/bin/bash
+        home=/home/ansible
+      become: yes
+      become_method: sudo
+
+    - name: Ensure ~/.ssh exists.
+      file:
+        path: /home/ansible/.ssh
+        state: directory
+        mode: 0755
+        owner: ansible
+        group: ansible
+      become: yes
+      become_method: sudo
+
+    - name: Ensure ~/.ssh/authorized_keys exists.
+      file:
+        path: /home/ansible/.ssh/authorized_keys
+        state: touch
+        mode: 0755
+      become: yes
+      become_method: sudo
+
+    - name: Ensure key is present in authorized_keys.
+      authorized_key:
+        user: ansible
+        key: '{{ item }}'
+        state: present
+      with_file:
+        - ~/.ssh/id_ed25519_ansible.pub
+      become: yes
+      become_method: sudo
+
+    - name: Ensure ansible user is allowed to escalate privileges.
+      community.general.sudoers:
+        name: allow-ansible-sudo
+        state: present
+        user: ansible
+        commands: ALL
+        nopassword: yes
+      become: yes
+      become_method: sudo
+
+    # - name: Set up TailScale
+    #   hosts: all
+    #   roles:
+    #     - role: artis3n.tailscale
+    #       vars:
+    #         tailscale_authkey: "{{ lookup('env', 'TAILSCALE_KEY') }}"

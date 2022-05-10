@@ -1,0 +1,25 @@
+---
+- name: Ensure data folder exists.
+  file:
+    dest: "{{ container_path }}/tandoor/{{ item }}"
+    state: directory
+  loop:
+    - postgresql
+    - mediafiles
+
+- name: Copy docker-compose.yml.
+  template:
+    src: "templates/docker-compose.yml.j2"
+    dest: "{{ container_path }}/tandoor/docker-compose.yml"
+
+- name: Copy .env file.
+  template:
+    src: "templates/env.j2"
+    dest: "{{ container_path }}/tandoor/.env"
+
+- name: Deploy Tandoor with Docker Compose.
+  community.docker.docker_compose_v2:
+    project_src: "{{ container_path }}/tandoor/"
+    files:
+    - docker-compose.yml
+    recreate: always

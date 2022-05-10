@@ -1,0 +1,119 @@
+---
+#
+#  Tasks and roles for all hosts
+#
+- hosts: servers
+  become: yes
+
+  vars_files:
+    - vars/vault.yml
+
+  pre_tasks:
+    - name: Update apt cache if needed.
+      apt: update_cache=yes cache_valid_time=3600
+
+  roles:
+    - role: system
+      tags: system
+    - role: docker
+      vars:
+        docker_compose_version: "2.20.2"
+      tags: docker
+    - role: kvm
+      tags: kvm
+    # - role: telegraf
+    #   tags: telegraf
+
+#
+#  Tasks and roles for gondor
+#
+- hosts: gondor
+  become: yes
+
+  vars_files:
+    - vars/vault.yml
+
+  roles:
+    - role: zfs
+    - role: users
+    - role: nut
+      vars:
+      - nut_server: yes
+      tags: ups
+    - role: unifi
+      tags: unifi
+    - role: nfs-server
+      tags: nfs
+    - role: samba-server
+      vars:
+        samba_shares:
+          - name: Linus
+            path: /tank/nas/linus
+            comment: 'Aargh! Pirates!'
+#            vfs_objects:
+#              - name: fruit
+#                options:
+#                  - name: resource
+#                    value: stream
+#                  - name: metadata
+#                    value: stream
+#                  - name: encoding
+#                    value: native
+#              - name: streams_xattr
+#              - name: shadow_copy_zfs
+            group: pirates
+            write_list: +pirates
+          - name: Backup
+            path: /tank/nas/backup
+            comment: 'Serious stuff.'
+            group: ""
+            write_list: linus
+          - name: Photos
+            path: /tank/nas/photos
+            comment: 'Lots of photos!'
+            group: ""
+            write_list: linus
+          - name: Plex
+            path: /tank/media
+            comment: 'Media files'
+            group: plex
+            write_list: plex
+      tags: samba
+    - role: rproxy
+      tags: rproxy,web
+    - role: nextcloud
+      tags: nextcloud
+    - role: plex
+      tags: plex
+    - role: tandoor
+      tags: tandoor,web
+    - role: dashboard
+      tags: dashboard
+    # - role: autorestic
+    #   tags: restic
+    - role: frigate
+      tags: frigate
+    - role: crafty
+      tags: crafty
+
+#
+#  Tasks and roles for feanor
+#
+# - hosts: feanor
+#   become: yes
+
+#   vars_files:
+#     - vars/vault.yml
+
+#   roles:
+#     - role: nut
+#       vars:
+#       - nut_server: no
+#       tags: ups
+#     - role: nfs-client
+#       tags: nfs
+#     - role: samba-client
+#       tags: samba
+
+#     - role: crafty
+#       tags: crafty

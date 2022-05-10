@@ -1,0 +1,13 @@
+---
+- hosts: servers
+  tasks:
+    - name: Import SSH keys from GitHub.
+      authorized_key:  
+        user: "{{ ansible_user | default('linus') }}"
+        state: present
+        key: https://github.com/Limpan.keys
+    - name: Update all packages.
+      become: true
+      package:
+        name: '*'
+        state: latest

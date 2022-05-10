@@ -1,0 +1,28 @@
+---
+- name: Ensure data folder exists.
+  file:
+    dest: "{{ container_path }}/plex"
+    state: directory
+    owner: "{{ plex_uid }}"
+    group: "{{ plex_gid }}"
+
+- name: Ensure transcode folder exists.
+  file:
+    dest: "/var/plex/transcode"
+    state: directory
+    owner: "{{ plex_uid }}"
+    group: "{{ plex_gid }}"
+
+- name: Copy docker-compose.yml.
+  template:
+    src: "templates/docker-compose.yml.j2"
+    dest: "{{ container_path }}/plex/docker-compose.yml"
+    owner: "{{ plex_uid }}"
+    group: "{{ plex_gid }}"
+
+- name: Deploy Plex with Docker Compose.
+  community.docker.docker_compose_v2:
+    project_src: "{{ container_path }}/plex/"
+    files:
+    - docker-compose.yml
+    recreate: always

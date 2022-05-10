@@ -1,0 +1,39 @@
+services:
+  crafty:
+    image: registry.gitlab.com/crafty-controller/crafty-4:4.4.0
+    restart: always
+    environment:
+        - TZ=Etc/UTC
+    ports:
+        - "18000:8000" # HTTP
+        - "18443:8443" # HTTPS
+        - "18123:8123" # DYNMAP
+        - "19132:19132/udp" # BEDROCK
+        - "25565:25565" # MC SERV PORT
+    volumes:
+        - "{{ container_path }}/crafty/backups:/crafty/backups"
+        - "{{ container_path }}/crafty/logs:/crafty/logs"
+        - "{{ container_path }}/crafty/servers:/crafty/servers"
+        - "{{ container_path }}/crafty/config:/crafty/app/config"
+        - "{{ container_path }}/crafty/import:/crafty/import"
+    networks:
+      - internal
+      - web
+  db:
+    image: docker.io/library/postgres:16.3
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: {{ crafty_db_root_password }}
+      POSTGRES_USER: crafty
+      POSTGRES_DB: crafty
+    volumes:
+      - "{{ container_path }}/crafty/db:/var/lib/postgresql/data"
+    networks:
+      - internal
+
+networks:
+  internal:
+  web:
+    name: web
+    external: true

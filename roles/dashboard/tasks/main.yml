@@ -1,0 +1,29 @@
+---
+- name: Ensure data folder exists.
+  file:
+    dest: "{{ container_path }}/influxdb"
+    state: directory
+    owner: "{{ UID }}"
+    group: "{{ GID }}"
+
+- name: Copy docker-compose.yml.
+  template:
+    src: "templates/docker-compose.yml.j2"
+    dest: "{{ container_path }}/influxdb/docker-compose.yml"
+
+- name: Ensure InfluxDB data and config folders exists.
+  file:
+    dest: "{{ container_path }}/influxdb/{{ item }}"
+    state: directory
+    owner: "{{ UID }}"
+    group: "{{ GID }}"
+  loop:
+    - data
+    - config
+
+- name: Deploy InfluxDB with Docker Compose.
+  docker_compose:
+    project_src: "{{ container_path }}/influxdb/"
+    files:
+    - docker-compose.yml
+    recreate: always

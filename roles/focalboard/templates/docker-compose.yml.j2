@@ -1,0 +1,35 @@
+version: "3"
+
+services:
+    app:
+        image: mattermost/focalboard:latest
+        depends_on:
+            - db
+        expose:
+            - 8000
+        environment:
+            VIRTUAL_HOST: localhost
+            VIRTUAL_PORT: 8000
+            VIRTUAL_PROTO: http
+        volumes:
+            - ./config.json:/opt/focalboard/config.json
+            - ./data:/opt/focalboard/data
+        restart: always
+        networks:
+            - web
+            - default
+
+    db:
+        image: postgres:latest
+        restart: always
+        volumes:
+            - ./postgresql:/var/lib/postgresql/data
+        environment:
+            POSTGRES_DB: boards
+            POSTGRES_USER: boardsuser
+            POSTGRES_PASSWORD: {{ focalboard_dbpassword }}
+
+networks:
+    web:
+        external:
+            name: web

@@ -1,0 +1,59 @@
+---
+- name: Ensure data folder exists.
+  file:
+    dest: "{{ container_path }}/rproxy/{{ item }}"
+    state: directory
+    owner: "{{ UID }}"
+    group: "{{ GID }}"
+  loop:
+    - authelia
+    - caddy
+    - gollum
+    - heimdall
+
+- name: Copy Caddy config.
+  template:
+    src: templates/caddy/Caddyfile.j2
+    dest: "{{ container_path }}/rproxy/caddy/Caddyfile"
+    owner: "{{ UID }}"
+    group: "{{ GID }}"
+
+- name: Ensure Caddy data and config folders exists.
+  file:
+    dest: "{{ container_path }}/rproxy/caddy/{{ item }}"
+    state: directory
+    owner: "{{ UID }}"
+    group: "{{ GID }}"
+  loop:
+    - data
+    - config
+
+- name: Copy Authelia user config.
+  template:
+    src: templates/authelia/users.yml.j2
+    dest: "{{ container_path }}/rproxy/authelia/users.yml"
+    owner: "{{ UID }}"
+    group: "{{ GID }}"
+
+- name: Copy Authelia rules.
+  template:
+    src: templates/authelia/configuration.yml.j2
+    dest: "{{ container_path }}/rproxy/authelia/configuration.yml"
+    owner: "{{ UID }}"
+    group: "{{ GID }}"
+
+- name: Copy docker-compose.yml.
+  template:
+    src: "templates/docker-compose.yml.j2"
+    dest: "{{ container_path }}/rproxy/docker-compose.yml"
+
+- name: Ensure docker network web exists.
+  docker_network:
+    name: web
+
+- name: Deploy reverse proxy with Docker Compose.
+  community.docker.docker_compose_v2:
+    project_src: "{{ container_path }}/rproxy/"
+    files:
+    - docker-compose.yml
+    recreate: always

@@ -1,0 +1,25 @@
+---
+- name: Ensure data folder exists.
+  file:
+    dest: "{{ container_path }}/focalboard/{{ item }}"
+    state: directory
+  loop:
+    - data
+    - postgresql
+
+- name: Copy docker-compose.yml.
+  template:
+    src: "templates/docker-compose.yml.j2"
+    dest: "{{ container_path }}/focalboard/docker-compose.yml"
+
+- name: Copy config.json file.
+  template:
+    src: "templates/config.json.j2"
+    dest: "{{ container_path }}/focalboard/config.json"
+
+- name: Deploy Focalboard with Docker Compose.
+  docker_compose:
+    project_src: "{{ container_path }}/focalboard/"
+    files:
+    - docker-compose.yml
+    recreate: always

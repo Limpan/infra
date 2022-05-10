@@ -1,0 +1,34 @@
+---
+- name: Install Samba packages.
+  apt:
+    name:
+      - samba
+      - samba-common
+      - smbclient
+    state: present
+
+- name: Copy Samba configuration file.
+  template:
+    src: templates/smb.conf.j2
+    dest: /etc/samba/smb.conf
+  notify: restart smb
+
+- name: Ensure Samba is running and set to start on boot.
+  service:
+    name: smbd
+    state: started
+    enabled: true
+
+- name: Create Samba users if they don't exist yet
+  shell: >
+    set -o nounset -o pipefail -o errexit &&
+    (pdbedit --user={{ item.name }} 2>&1 > /dev/null) \
+    || (echo {{ item.password }}; echo {{ item.password }}) \
+    | smbpasswd -s -a {{ item.name }}
+  args:
+    executable: /bin/bash
+  with_items: "{{ nas_users|selectattr('samba') }}"
+  no_log: true
+  register: create_user_output
+  changed_when: "'Added user' in create_user_output.stdout"
+  tags: samba

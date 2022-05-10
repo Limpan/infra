@@ -1,0 +1,27 @@
+---
+- name: Ensure data folder exists.
+  file:
+    dest: "{{ container_path }}/frigate"
+    state: directory
+
+- name: Ensure storage folder exists.
+  file:
+    dest: "{{ container_path }}/frigate/storage"
+    state: directory
+
+- name: Copy config.yml.
+  template:
+    src: "templates/config.yml.j2"
+    dest: "{{ container_path }}/frigate/config.yml"
+
+- name: Copy docker-compose.yml.
+  template:
+    src: "templates/docker-compose.yml.j2"
+    dest: "{{ container_path }}/frigate/docker-compose.yml"
+
+- name: Deploy Frigate with Docker Compose.
+  community.docker.docker_compose_v2:
+    project_src: "{{ container_path }}/frigate/"
+    files:
+    - docker-compose.yml
+    recreate: always

@@ -1,0 +1,27 @@
+version: '2'
+
+services:
+  plex:
+    image: plexinc/pms-docker:latest
+    volumes:
+      - {{ container_path }}/plex/config:/config
+      - /var/plex/transcode:/transcode
+      - /mnt/apoc/media:/data
+    restart: always
+    ports:
+      - "172.16.1.200:32400:32400/tcp"
+      - "172.16.1.200:3005:3005/tcp"
+      - "172.16.1.200:8324:8324/tcp"
+      - "172.16.1.200:32469:32469/tcp"
+      - "172.16.1.200:32410:32410/udp"
+      - "172.16.1.200:32412:32412/udp"
+      - "172.16.1.200:32413:32413/udp"
+      - "172.16.1.200:32414:32414/udp"
+    environment:
+      - PLEX_UID={{ plex_uid }}
+      - PLEX_GID={{ plex_gid }}
+      - TZ=Europe/Stockholm
+      - HOSTNAME=plex
+      - PLEX_CLAIM={{ plex_claim }}
+    devices:
+      - "/dev/dri:/dev/dri"

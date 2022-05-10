@@ -1,0 +1,13 @@
+---
+UID: 1000
+GID: 1000
+ups_server_addr: 172.16.1.200
+ups_name: mainups
+ups_driver: usbhid-ups
+ups_port: /dev/ttyS0
+ups_desc: "Main system UPS."
+ups_vendor_id: "051D"
+ups_product_id: "0002"
+ups_bus: "003"
+nfs_share_addr: 10.10.10.0/255.255.255.0
+nfs_server_addr: 10.10.10.10

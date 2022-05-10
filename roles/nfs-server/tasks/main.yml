@@ -1,0 +1,25 @@
+---
+- name: Ensure container folder exists.
+  file:
+    path: /tank/containers
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Install NFS.
+  apt:
+    name:
+      - nfs-kernel-server
+
+- name: Copy exports file.
+  template:
+    src: "templates/exports.j2"
+    dest: "/etc/exports"
+  notify: reload nfs
+
+- name: Ensure NFS server is running and set to start on boot.
+  service:
+    name: nfs-kernel-server
+    state: started
+    enabled: true

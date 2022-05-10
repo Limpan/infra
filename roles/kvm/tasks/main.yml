@@ -1,0 +1,13 @@
+---
+- name: Ensure KVM packages installed.
+  apt:
+    name: 
+      - qemu-kvm
+      - libvirt-daemon-system
+    state: present
+
+- name: Ensure bridge network is present.
+  copy:
+    src: files/bridge.xml
+    dest: /etc/libvirt/qemu/networks/bridge.xml
+    mode: '0600'

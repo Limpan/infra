@@ -1,0 +1,54 @@
+---
+- name: Ensure dependencies are installed.
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+    state: present
+
+- name: Ensure additional dependencies are installed.
+  apt:
+    name: 
+      - gnupg
+      - curl
+    state: present
+
+- name: Ensure apt keyring folder eists.
+  file:
+    dest: "/etc/apt/keyrings"
+    state: directory
+    owner: root
+    group: root
+
+- name: Check if InfluxData apt key exists.
+  stat:
+    path: /etc/apt/keyrings/influxdb.gpg
+  register: influxdb_gpg
+
+- name: Add InfluxData apt key.
+  shell: >
+    curl -fsSL https://repos.influxdata.com/influxdb.key | sudo gpg --dearmor -o /etc/apt/keyrings/influxdb.gpg
+  when: not influxdb_gpg.stat.exists
+
+- name: Add Telegraf repository.
+  apt_repository:
+    repo: deb [signed-by=/etc/apt/keyrings/influxdb.gpg] https://repos.influxdata.com/debian stable main
+    state: present
+    update_cache: true
+
+- name: Install Telegraf.
+  apt:
+    name:
+      - telegraf
+
+- name: Ensure telegraf daemon is running and started on boot.
+  service:
+    name: telegraf
+    state: started
+    enabled: yes
+
+- name: Copy configuration file.
+  template:
+    src: templates/telegraf.conf.j2
+    dest: /etc/telegraf/telegraf.conf
+  notify: restart telegraf

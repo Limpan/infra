@@ -1,0 +1,83 @@
+mqtt:
+  host: 172.16.0.222
+  user: frigate
+  password: silicon-material-system-cardboard
+
+detectors:
+  coral:
+    type: edgetpu
+    device: usb
+
+objects:
+  track:
+    - person
+    - bicycle
+    - car
+    - motorcycle
+    - bus
+    - bear
+    - elephant
+    - backpack
+    - umbrella
+    - handbag
+
+record:
+  enabled: true
+  events:
+    retain:
+      default: 10
+
+snapshots:
+  enabled: true
+
+cameras:
+  driveway:
+    ffmpeg:
+      inputs:
+        - path: rtsp://admin:{FRIGATE_RTSP_PASSWORD}@192.168.100.11:554/Streaming/Channels/2
+          roles:
+            - detect
+            - rtmp
+        - path: rtsp://admin:{FRIGATE_RTSP_PASSWORD}@192.168.100.11:554/Streaming/Channels/1
+          roles:
+            - record
+    rtmp:
+      enabled: false
+    detect:
+      width: 640
+      height: 360
+    motion:
+      mask:
+        - 266,0,0,0,0,220
+
+  back:
+    ffmpeg:
+      inputs:
+        - path: rtsp://admin:{FRIGATE_RTSP_PASSWORD}@192.168.100.12:554/Streaming/Channels/2
+          roles:
+            - detect
+            - rtmp
+        - path: rtsp://admin:{FRIGATE_RTSP_PASSWORD}@192.168.100.12:554/Streaming/Channels/1
+          roles:
+            - record
+    rtmp:
+      enabled: false
+    detect:
+      width: 640
+      height: 360
+
+  door:
+    ffmpeg:
+      inputs:
+        - path: rtsp://admin:{FRIGATE_RTSP_PASSWORD}@192.168.100.13:554/Streaming/Channels/2
+          roles:
+            - detect
+            - rtmp
+        - path: rtsp://admin:{FRIGATE_RTSP_PASSWORD}@192.168.100.13:554/Streaming/Channels/1
+          roles:
+            - record
+    rtmp:
+      enabled: false
+    detect:
+      width: 640
+      height: 360

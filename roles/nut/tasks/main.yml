@@ -1,0 +1,65 @@
+---
+- name: Install NUT server.
+  apt: name=nut-server state=present
+  when: (nut_server is defined) and nut_server
+
+- name: Install NUT client.
+  apt: name=nut-client state=present
+
+- name: Ensure NUT server running in correct mode.
+  template:
+    src: templates/nut.conf.j2
+    dest: /etc/nut/nut.conf
+    owner: root
+    group: nut
+
+- name: Copy UPS configuration file.
+  template:
+    src: templates/ups.conf.j2
+    dest: /etc/nut/ups.conf
+    owner: root
+    group: nut
+  when: (nut_server is defined) and nut_server
+
+- name: Copy UPS daemon users file.
+  template:
+    src: templates/upsd.conf.j2
+    dest: /etc/nut/upsd.conf
+    owner: root
+    group: nut
+  when: (nut_server is defined) and nut_server
+
+- name: Copy UPS daemon users file.
+  template:
+    src: templates/upsd.users.j2
+    dest: /etc/nut/upsd.users
+    owner: root
+    group: nut
+  when: (nut_server is defined) and nut_server
+  
+- name: Copy UPS monitor configuration file.
+  template:
+    src: templates/upsmon.conf.j2
+    dest: /etc/nut/upsmon.conf
+    owner: root
+    group: nut
+
+- name: Ensure nut-driver restarted and enabled.
+  service:
+    name: nut-driver
+    state: restarted
+    enabled: yes
+  when: (nut_server is defined) and nut_server
+
+- name: Ensure nut-server restarted and enabled.
+  service:
+    name: nut-server
+    state: restarted
+    enabled: yes
+  when: (nut_server is defined) and nut_server
+
+- name: Ensure nut-client restarted and enabled.
+  service:
+    name: nut-client
+    state: restarted
+    enabled: yes

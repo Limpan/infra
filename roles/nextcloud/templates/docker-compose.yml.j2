@@ -1,0 +1,73 @@
+version: "2"
+
+services:
+  db:
+    image: mariadb:11.5
+    user: 999:999
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    volumes:
+      - "{{ container_path }}/nextcloud/db:/var/lib/mysql"
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD={{ nextcloud_db_root_password }}
+      - MYSQL_PASSWORD={{ nextcloud_db_user_password }}
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud_admin
+    networks:
+      - internal
+#    labels:
+#      - traefik.enable=false
+
+  app:
+    image: nextcloud:29-apache
+    container_name: nextcloud
+    links:
+      - db
+    volumes:
+      - "{{ container_path }}/nextcloud/nc_instance:/var/www/html"
+      - "{{ container_path }}/nextcloud/data:/var/www/html/data"
+      - "{{ container_path }}/nextcloud/config:/var/www/html/config"
+      - "{{ container_path }}/nextcloud/apps:/var/www/html/apps"
+      - "{{ container_path }}/nextcloud/custom_apps:/var/www/html/custom_apps"
+    restart: always
+    environment:
+      - VIRTUAL_HOST=cloud.etnolit.se
+    networks:
+      - internal
+      - web
+#    labels:
+#      - traefik.http.routers.nextcloud.rule=Host(`cloud.etnolit.se`)
+#      - traefik.http.routers.nextcloud.entrypoints=websecure
+#      - traefik.http.routers.nextcloud.tls=true
+#      - traefik.http.routers.nextcloud.tls.certresolver=lets-encrypt
+#      - traefik.port=80
+#      # Middlewares
+#      - traefik.http.middlewares.nextcloudHeaders.headers.frameDeny=false
+#      - traefik.http.middlewares.nextcloudHeaders.headers.sslRedirect=true
+#      - traefik.http.middlewares.nextcloudHeaders.headers.forceSTSHeader=true
+#      - traefik.http.middlewares.nextcloudHeaders.headers.stsIncludeSubdomains=true
+#      - traefik.http.middlewares.nextcloudHeaders.headers.stsSeconds=315360000
+#      - traefik.http.middlewares.nextcloudRedirect.redirectregex.regex=https://(.*)/.well-known/(card|cal)dav
+#      - traefik.http.middlewares.nextcloudRedirect.redirectregex.regex=https://$$1/remote.php/dav/
+#      # Apply middlewares
+#      - traefik.http.routers.nextcloud.middlewares=nextcloudHeaders@docker,nextcloudRedirect@docker
+
+  cron:
+    image: nextcloud:29-apache
+    restart: always
+    volumes_from:
+      - app
+    entrypoint: /cron.sh
+    depends_on:
+      - db
+      - app
+    networks:
+      - internal
+#    labels:
+#      - traefik.enable=false
+
+networks:
+  internal:
+  web:
+    name: web
+    external: true

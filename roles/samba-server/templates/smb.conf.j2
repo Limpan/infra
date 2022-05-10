@@ -1,0 +1,80 @@
+#=== Global Settings ===========================================
+
+[global]
+    ## Browsing/Identification ###
+    workgroup = WORKGROUP
+    server string = {{ ansible_hostname }}
+
+    ## Logging
+    logging = syslog
+
+    ## Apple-friendly options
+    # https://wiki.samba.org/index.php/Configure_Samba_to_Work_Better_with_Mac_OS_X
+    min protocol = SMB2
+    vfs objects = fruit streams_xattr  
+    fruit:metadata = stream
+    fruit:model = MacSamba
+    fruit:posix_rename = yes 
+    fruit:veto_appledouble = no
+    fruit:wipe_intentionally_left_blank_rfork = yes 
+    fruit:delete_empty_adfiles = yes
+
+    ## Authentication
+    security = user
+    passdb backend = tdbsam
+    map to guest = never
+{% if samba_server_min_protocol is defined %}
+    server min protocol = {{ samba_server_min_protocol }}
+
+{% endif %}
+{% if samba_interfaces is defined and samba_interfaces|length > 0 %}
+    interfaces = {{ samba_interfaces }}
+
+{% endif %}
+
+    ## No printers
+    load printers = no
+    printing = bsd
+    printcap name = /dev/null
+
+{% if samba_shares is defined and samba_shares|length > 0 %}
+#=== File Shares ===============================================
+{% for share in samba_shares %}
+[{{ share.name }}]
+{% if share.comment is defined %}
+    comment = {{ share.comment }}
+{% endif %}
+{% if share.vfs_objects is defined and share.vfs_objects|length > 0 %}
+    vfs objects = {% for obj in share.vfs_objects %}{{ obj.name }} {% endfor %}
+
+{% for obj in share.vfs_objects %}
+{% if obj.options is defined and obj.options|length > 0 %}
+{% for opt in obj.options %}
+    {{ obj.name }}:{{ opt.name }} = {{ opt.value }}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+    path = {{ share.path }}
+    public = {{ share.public|default('no') }}
+{% if share.valid_users is defined %}
+    valid users = {{ share.valid_users }}
+{% endif %}
+{% if share.write_list is defined %}
+    write list = {{ share.write_list }}
+{% endif %}
+{% if share.group is defined %}
+    force group = {{ share.group }}
+{% endif %}
+{% if share.browseable is defined %}
+    browseable = {{ share.browseable }}
+{% endif %}
+{% if share.writable is defined %}
+    writable = {{ share.writable }}
+{% endif %}
+    create mode = {{ share.create_mode|default('0664') }}
+    force create mode = {{ share.force_create_mode|default('0664') }}
+    directory mode = {{ share.directory_mode|default('0775') }}
+    force directory mode = {{ share.force_directory_mode|default('0775') }}
+{% endfor %}
+{% endif %}

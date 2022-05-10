@@ -1,0 +1,39 @@
+version: "3.9"
+services:
+  frigate:
+    container_name: frigate
+    privileged: true # this may not be necessary for all setups
+    restart: unless-stopped
+    image: blakeblackshear/frigate:stable-amd64
+    shm_size: "256mb" # update for your cameras based on calculation above
+    devices:
+      - /dev/bus/usb:/dev/bus/usb # USB Coral
+      - /dev/dri/renderD128 # Intel QuickSync
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - {{ container_path }}/frigate/config.yml:/config/config.yml:ro
+      - {{ container_path }}/frigate/storage:/media/frigate
+      - type: tmpfs
+        target: /tmp/cache
+        tmpfs:
+          size: 1000000000
+#    networks:
+#      default:
+#        priority: 100
+#      cameras:
+#        ipv4_address: 192.168.100.10
+    ports:
+      - "5000:5000"
+      - "1935:1935" # RTMP feeds
+    environment:
+      FRIGATE_RTSP_PASSWORD: "{{ frigate_rtsp_password }}"
+
+#networks:
+#  cameras:
+#    driver: macvlan
+#    driver_opts: 
+#      parent: vlan.300
+#    ipam:
+#      driver: default
+#      config:
+#        - subnet: 192.168.100.0/24

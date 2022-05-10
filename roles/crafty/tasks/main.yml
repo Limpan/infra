@@ -1,0 +1,24 @@
+---
+- name: Ensure data folder exists.
+  file:
+    dest: "{{ container_path }}/crafty/{{ item }}"
+    state: directory
+  loop:
+    - backups
+    - logs
+    - servers
+    - config
+    - import
+    - db
+
+- name: Copy docker-compose.yml.
+  template:
+    src: "templates/docker-compose.yml.j2"
+    dest: "{{ container_path }}/crafty/docker-compose.yml"
+
+- name: Deploy Crafty with Docker Compose.
+  community.docker.docker_compose_v2:
+    project_src: "{{ container_path }}/crafty/"
+    files:
+    - docker-compose.yml
+    recreate: always

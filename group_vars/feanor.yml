@@ -1,0 +1,4 @@
+---
+ip_addr_vlan100: 172.16.1.201
+ip_addr_vlan200: 10.10.10.20
+container_path: /containers

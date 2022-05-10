@@ -1,0 +1,107 @@
+---
+- name: Ensure old versions of Docker are not installed.
+  apt:
+    name:
+      - docker
+      - docker-engine
+    state: absent
+
+- name: Ensure dependencies are installed.
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+    state: present
+
+- name: Ensure additional dependencies are installed.
+  apt:
+    name: 
+      - gnupg
+      - curl
+    state: present
+
+- name: Ensure apt keyring folder eists.
+  file:
+    dest: "/etc/apt/keyrings"
+    state: directory
+    owner: root
+    group: root
+
+- name: Check if Docker apt key exists.
+  stat:
+    path: /etc/apt/keyrings/docker.gpg
+  register: docker_gpg
+
+- name: Add Docker apt key.
+  shell: >
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  when: not docker_gpg.stat.exists
+
+- name: Add Docker repository.
+  apt_repository:
+    repo: deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu jammy stable
+    state: present
+    update_cache: true
+
+- name: Install Docker (and Docker Compose).
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-compose-plugin
+
+- name: Ensure docker daemon is running and started on boot.
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Ensure group "docker" exists with correct gid.
+  group:
+    name: docker
+    state: present
+    gid: 2000
+
+- name: Install pip. 
+  apt:
+    name:
+      - python3-pip
+
+- name: Install Python packages.
+  pip:
+    name: 
+    - docker
+    - docker-compose
+    state: present
+
+- name: Check current docker-compose version.
+  command: docker-compose --version
+  register: docker_compose_version_str
+  changed_when: false
+  failed_when: false
+  check_mode: no
+
+- name: Set docker-compose version variable.
+  set_fact:
+    docker_compose_current_version: "{{ docker_compose_version_str.stdout | regex_search('(\\d+(\\.\\d+)+)') }}"
+    when:
+      - docker_compose_version.stdout is defined
+
+- name: Install or upgrade docker-compose.
+  get_url:
+    url: "https://github.com/docker/compose/releases/download/v{{ docker_compose_version }}/docker-compose-linux-x86_64"
+    checksum: "sha256:https://github.com/docker/compose/releases/download/v{{ docker_compose_version }}/docker-compose-linux-x86_64.sha256"
+    dest: /usr/local/bin/docker-compose
+    mode: 'a+x'
+    force: yes
+  when: >
+    docker_compose_current_version == ""
+    or docker_compose_current_version is version(docker_compose_version,'<') 
+
+- name: Ensure folder for docker-compose exists.
+  file: 
+    dest: "{{ container_path }}"
+    state: directory
+    owner: root
+    group: root

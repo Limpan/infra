@@ -1,0 +1,51 @@
+version: '3'
+
+services:
+  caddy:
+    image: caddy:latest
+    restart: unless-stopped
+    ports:
+      - "172.16.1.200:80:80"
+      - "172.16.1.200:443:443"
+    volumes:
+      - "{{ container_path }}/rproxy/caddy/Caddyfile:/etc/caddy/Caddyfile"
+      - "{{ container_path }}/rproxy/caddy/config:/config"
+      - "{{ container_path }}/rproxy/caddy/data:/data"
+    networks:
+      - web
+
+  authelia:
+    image: "authelia/authelia:latest"
+    restart: unless-stopped
+    volumes:
+      - "{{ container_path }}/rproxy/authelia/configuration.yml:/config/configuration.yml"
+      - "{{ container_path }}/rproxy/authelia/users.yml:/config/users.yml"
+    networks:
+      - web
+    environment:
+      - TZ=Stockholm/Europe
+
+  heimdall:
+    image: linuxserver/heimdall:latest
+    restart: unless-stopped
+    environment:
+      - PUID={{ UID }}
+      - PGID={{ GID }}
+      - TZ=Europe/Stockholm
+    volumes:
+      - "{{ container_path }}/rproxy/heimdall:/config"
+    networks:
+      - web
+
+  gollum:
+    image: gollumorg/gollum:5
+    restart: unless-stopped
+    volumes:
+      - "{{ container_path }}/rproxy/gollum/wiki:/wiki"
+    networks:
+      - web
+
+networks:
+  web:
+    external:
+      name: web

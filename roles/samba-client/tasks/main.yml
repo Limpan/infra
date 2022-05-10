@@ -1,0 +1,6 @@
+---
+- name: Ensure Samba packages are installed.
+  apt:
+    name:
+      - smbclient
+      - cifs-utils

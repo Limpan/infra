@@ -1,0 +1,42 @@
+network:
+  version: 2
+  ethernets:
+    eno1:
+      dhcp4: false
+
+  bridges:
+    br0:
+      dhcp4: false
+      interfaces: [ vlan.100 ]
+      addresses: [ {{ ip_addr_vlan100 }}/24 ]
+      nameservers:
+        addresses: [ 1.1.1.1, 1.0.0.1 ]
+        search: [ localdomain ]
+      routes:
+        - to: default
+          via: 172.16.1.254
+          on-link: true
+    
+    brlan:
+      dhcp4: false
+      interfaces: [ eno1 ]
+
+  vlans:
+    vlan.100:
+      id: 100
+      link: eno1
+      dhcp4: false
+      dhcp6: false
+
+    vlan.200:
+      id: 200
+      link: eno1
+      dhcp4: false
+      dhcp6: false
+      addresses: [ {{ ip_addr_vlan200 }}/24 ]
+
+    vlan.300:
+      id: 300
+      link: eno1
+      dhcp4: false
+      dhcp6: false

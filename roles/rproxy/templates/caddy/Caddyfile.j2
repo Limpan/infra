@@ -1,0 +1,62 @@
+{
+    email "linus@etnolit.se"
+    debug
+}
+
+(auth) {
+    forward_auth authelia:9091 {
+		uri /api/verify?rd=https://login.home.etnolit.se
+		copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
+	}
+}
+
+login.home.etnolit.se {
+    reverse_proxy http://authelia:9091
+}
+
+home.etnolit.se {
+	forward_auth authelia:9091 {
+		uri /api/verify?rd=https://login.home.etnolit.se
+		copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
+	}
+
+    reverse_proxy http://heimdall:80
+}
+
+hass.etnolit.se {
+    reverse_proxy http://172.16.0.222:8123
+}
+
+cloud.etnolit.se {
+    rewrite /.well-known/carddav /remote.php/dav
+    rewrite /.well-known/caldav /remote.php/dav
+
+    reverse_proxy http://nextcloud:80
+    header Strict-Transport-Security "max-age=31536000"
+}
+
+wiki.etnolit.se {
+    import auth
+
+    reverse_proxy http://gollum:4567
+}
+
+mc.etnolit.se {
+    import auth
+
+    reverse_proxy https://172.16.1.220:8000 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+}
+
+recipes.etnolit.se {
+    import auth
+    reverse_proxy http://172.16.1.200:8001
+}
+
+crafty.etnolit.se {
+    import auth
+    reverse_proxy http://crafty:8443
+}
