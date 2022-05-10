@@ -1,0 +1,11 @@
+# Linux
+*~
+
+# macOS
+*.DS_Store
+.AppleDouble
+.LSOverride
+
+# Ansible vault
+.vault-password
+vault.yaml
