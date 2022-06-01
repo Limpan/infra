@@ -10,13 +10,14 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 make: *** No rule to make target `all'.  Stop.
 
 
-# Make data base, printed on Wed May 25 20:31:27 2022
+# Make data base, printed on Thu Jun  2 09:06:50 2022
 
 # Variables
 
 # automatic
 <D = $(patsubst %/,%,$(dir $<))
 # automatic
+ 
 ?F = $(notdir $?)
 # environment
 VSCODE_LOG_NATIVE = false
@@ -41,13 +42,13 @@ VSCODE_VERBOSE_LOGGING = true
 # environment
 __CFBundleIdentifier = com.microsoft.VSCode
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /var/folders/bb/qdhhqs6977v52wkqll34rj8w0000gn/T/vscode-ipc-866641ac-6feb-4352-bfb9-827218779d0f.sock
+VSCODE_IPC_HOOK_EXTHOST = /var/folders/bb/qdhhqs6977v52wkqll34rj8w0000gn/T/vscode-ipc-0bb91723-4982-4ece-b5d9-1c7734aa2d34.sock
 # environment
 VSCODE_CWD = /
 # environment
 PATH = /opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Frameworks/Mono.framework/Versions/Current/Commands
 # environment
-LaunchInstanceID = CFA86A92-0463-49F8-AB23-E5FD36245B11
+LaunchInstanceID = 1218B426-A721-4C64-9F5C-1F418C53D5A9
 # environment
 VSCODE_LOG_STACK = false
 # environment
@@ -55,7 +56,7 @@ ELECTRON_RUN_AS_NODE = 1
 # default
 .FEATURES := target-specific order-only second-expansion else-if archives jobserver check-symlink
 # environment
-SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.BdLMKhFo3f/Listeners
+SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.q4o9rJG953/Listeners
 # automatic
 %F = $(notdir $%)
 # environment
@@ -73,7 +74,7 @@ HOME = /Users/linus
 # default
 MAKEFILEPATH := /Applications/Xcode.app/Contents/Developer/Makefiles
 # environment
-VSCODE_CODE_CACHE_PATH = /Users/linus/Library/Application Support/Code/CachedData/57fd6d0195bb9b9d1b49f6da5db789060795de47
+VSCODE_CODE_CACHE_PATH = /Users/linus/Library/Application Support/Code/CachedData/c3511e6c69bb39013c4a4b7b9566ec1ca73fc4d5
 # environment
 LOGNAME = linus
 # environment
@@ -109,10 +110,9 @@ MAKE_COMMAND := /Applications/Xcode.app/Contents/Developer/usr/bin/make
 # environment
 TMPDIR = /var/folders/bb/qdhhqs6977v52wkqll34rj8w0000gn/T/
 # automatic
- 
 *F = $(notdir $*)
 # environment
-VSCODE_IPC_HOOK = /Users/linus/Library/Application Support/Code/1.67.0-main.sock
+VSCODE_IPC_HOOK = /Users/linus/Library/Application Support/Code/1.67.2-main.sock
 # makefile
 MAKEFLAGS = Rrqp
 # environment
@@ -120,7 +120,7 @@ MFLAGS = -Rrqp
 # automatic
 *D = $(patsubst %/,%,$(dir $*))
 # environment
-XPC_SERVICE_NAME = application.com.microsoft.VSCode.30849709.30849715
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.31910376.31910382
 # automatic
 +D = $(patsubst %/,%,$(dir $+))
 # environment
@@ -140,10 +140,11 @@ PAGER = less
 # environment
 LC_ALL = C
 # environment
-SECURITYSESSIONID = 186a3
+SECURITYSESSIONID = 186bc
 # automatic
 ^F = $(notdir $^)
 # default
+ 
 SUFFIXES := 
 # default
 .INCLUDE_DIRS = /usr/local/include
@@ -152,7 +153,7 @@ MAKELEVEL := 0
 # environment
 LANG = C
 # environment
-VSCODE_PID = 526
+VSCODE_PID = 777
 # variable set hash-table stats:
 # Load=69/1024=7%, Rehash=0, Collisions=3/93=3%
 
@@ -162,9 +163,9 @@ VSCODE_PID = 526
 
 # Directories
 
-# . (device 16777220, inode 30615563): 22 files, no impossibilities.
+# . (device 16777220, inode 30615563): 20 files, no impossibilities.
 
-# 22 files, no impossibilities in 1 directories.
+# 20 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -186,7 +187,7 @@ encrypt:
 #  Modification time never checked.
 #  File has not been updated.
 #  commands to execute (from `makefile', line 5):
-	ansible-vault encrypt vars/vault.yaml
+	ansible-vault encrypt vars/vault.yml
 	
 
 # Not a target:
@@ -200,13 +201,13 @@ decrypt:
 #  Modification time never checked.
 #  File has not been updated.
 #  commands to execute (from `makefile', line 2):
-	ansible-vault decrypt vars/vault.yaml
+	ansible-vault decrypt vars/vault.yml
 	
 
 # Not a target:
 makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-05-10 21:19:46
+#  Last modified 2022-05-25 20:32:29
 #  File has been updated.
 #  Successfully updated.
 # variable set hash-table stats:
@@ -231,6 +232,6 @@ makefile:
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Wed May 25 20:31:27 2022
+# Finished Make data base on Thu Jun  2 09:06:50 2022
 
  

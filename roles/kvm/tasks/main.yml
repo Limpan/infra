@@ -1,0 +1,7 @@
+---
+- name: Ensure KVM packages installed.
+  apt:
+    name: 
+      - qemu-kvm
+      - libvirt-daemon-system
+    state: present

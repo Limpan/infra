@@ -1,4 +1,5 @@
+make --dry-run --always-make --keep-going --print-directory
 make: Entering directory `/Users/linus/Development/infra'
-ansible-vault decrypt vars/vault.yaml
+ansible-vault decrypt vars/vault.yml
 make: Leaving directory `/Users/linus/Development/infra'
  

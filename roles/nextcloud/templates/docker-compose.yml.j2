@@ -9,8 +9,8 @@ services:
       - /mnt/tank/containers/nextcloud/db:/var/lib/mysql
     restart: always
     environment:
-      - MYSQL_ROOT_PASSWORD=HUNTING-FAIL-charge-young
-      - MYSQL_PASSWORD=teach-INCH-EGGS-course
+      - MYSQL_ROOT_PASSWORD={{ nextcloud_db_root_password }}
+      - MYSQL_PASSWORD={{ nextcloud_db_user_password }}
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud_admin
     labels:

@@ -1,0 +1,22 @@
+---
+- name: Ensure container folder exists.
+  file:
+    path: "/mnt/tank/containers"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Install NFS client.
+  apt:
+    name:
+      - nfs-client
+      - nfs-common
+
+- name: Mount NFS share
+  mount:
+    src: 192.168.60.4:/srv/nfs/containers
+    path: /mnt/tank/containers
+    opts: rw,sync
+    state: mounted
+    fstype: nfs

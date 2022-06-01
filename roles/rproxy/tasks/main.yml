@@ -42,6 +42,10 @@
     src: "files/docker-compose.yml"
     dest: "{{ CONTAINER_PATH }}/rproxy/docker-compose.yml"
 
+- name: Ensure docker network web exists.
+  docker_network:
+    name: web
+
 - name: Deploy Traefik with Docker Compose.
   docker_compose:
     project_src: "{{ CONTAINER_PATH }}/rproxy/"

@@ -3,7 +3,7 @@
 This repo is for the infrastructure I manage.
 
 ## Setup hooks
-`./git-init.sh`
+Install git hooks by running `./git-init.sh`.
 
 ## Credits
 https://github.com/ironicbadger/infra

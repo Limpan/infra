@@ -30,6 +30,12 @@
 
   roles:
     - role: users
+    - role: nut
+      vars:
+      - nut_server: yes
+      tags: ups
+    - role: nfs-server
+      tags: nfs
     - role: samba
       vars:
         samba_shares:
@@ -63,9 +69,13 @@
     - vars/vault.yml
 
   roles:
-    - role: rproxy
-      tags: rproxy
     - role: nut
       vars:
-      - nut_server: yes
+      - nut_server: no
       tags: ups
+    - role: nfs-client
+      tags: nfs
+    - role: kvm
+      tags: kvm
+    - role: rproxy
+      tags: rproxy

@@ -7,8 +7,8 @@
     group: "{{ GID }}"
 
 - name: Copy docker-compose.yml.
-  copy:
-    src: "files/docker-compose.yml"
+  template:
+    src: "templates/docker-compose.yml.j2"
     dest: "{{ CONTAINER_PATH }}/nextcloud/docker-compose.yml"
 
 - name: Deploy Nextcloud with Docker Compose.

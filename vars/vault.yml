@@ -20,8 +20,11 @@ ups_users:
   feanor:
     password: 4CcLh7hdDPSqpwqtHdid
     role: slave
+
 nas_groups:
   - name: pirates
+  - name: plex
+    gid: 1200
 nas_users:
   - name: linus
     password: qwerty
@@ -30,4 +33,16 @@ nas_users:
     uid: 1100
     groups: admin,pirates
     samba: yes
-x: y
+  - name: plex
+    password: plex
+    shell: /bin/noshell
+    create_home: no
+    uid: 1200
+    groups: plex
+    samba: yes
+
+plex_uid: 1200
+plex_gid: 1200
+
+nextcloud_db_root_password: HUNTING-FAIL-charge-young
+nextcloud_db_user_password: teach-INCH-EGGS-course
