@@ -1,0 +1,71 @@
+---
+#
+#  Tasks and roles for all hosts
+#
+- hosts: servers
+  become: yes
+
+  vars_files:
+    - vars/vault.yml
+
+  pre_tasks:
+    - name: Update apt cache if needed.
+      apt: update_cache=yes cache_valid_time=3600
+
+  roles:
+    - role: system
+    - role: docker
+      vars:
+        docker_compose_version: "2.5.1"
+      tags: docker
+
+#
+#  Tasks and roles for gondor
+#
+- hosts: gondor
+  become: yes
+
+  vars_files:
+    - vars/vault.yml
+
+  roles:
+    - role: users
+    - role: samba
+      vars:
+        samba_shares:
+          - name: piratecove
+            path: /mnt/tank/pirates
+            comment: 'Aargh! Pirates!'
+            vfs_objects:
+              - name: fruit
+                options:
+                  - name: resource
+                    value: stream
+                  - name: metadata
+                    value: stream
+                  - name: encoding
+                    value: native
+              - name: streams_xattr
+              - name: shadow_copy_zfs
+            group: pirates
+            write_list: +pirates
+      tags: samba
+    - role: nextcloud
+      tags: nextcloud
+
+#
+#  Tasks and roles for feanor
+#
+- hosts: feanor
+  become: yes
+
+  vars_files:
+    - vars/vault.yml
+
+  roles:
+    - role: rproxy
+      tags: rproxy
+    - role: nut
+      vars:
+      - nut_server: yes
+      tags: ups

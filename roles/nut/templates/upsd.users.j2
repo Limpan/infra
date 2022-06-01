@@ -1,0 +1,6 @@
+{% for u in ups_users %}
+[{{ u }}]
+    password = {{ ups_users[u]["password"] }}
+    upsmon {{ ups_users[u]["role"] }}
+
+{% endfor %}}

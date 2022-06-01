@@ -1,0 +1,16 @@
+---
+- name: Add groups to system.
+  group:
+    name: "{{ item.name }}"
+    state: present
+  with_items: "{{ nas_groups }}"
+
+- name: Add users to system.
+  user:
+    name: "{{ item.name }}"
+    state: present
+    shell: "{{ item.shell|default('/bin/noshell') }}"
+    create_home: "{{ item.create_home|default('no') }}"
+    uid: "{{ item.uid }}"
+    groups: "{{ item.groups }}"
+  with_items: "{{ nas_users }}"

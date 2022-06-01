@@ -1,0 +1,33 @@
+---
+MAIN_DOMAIN: etnolit.se
+AUTHELIA_URL: auth.home.etnolit.se
+AUTHELIA_JWT_SECRET: UPVZQhDYGymS7LwgACLFrMkZuHxpaVi7GpXeiHbBzu9jKeL2rz5p8XhmnQS6UGNb
+AUTHELIA_ENCRYPTION_KEY: GP2pdEBxWbsGbN7teFukMnJmyEHcL5NWgf4PbBimp3MUMKjmqUJcR4f2xGMFXFnH
+authelia_users:
+  - username: linus
+    displayname: Linus Törngren
+    password: $argon2id$v=19$m=65536,t=1,p=8$amhVRzZsTGtjNjdvTkM5QQ$DoxEr9D0+qG5f8947sJEYKyBjfS+CfQZzbKl07MTZ2g
+    email: linus@etnolit.se
+    groups:
+      - admin
+authelia_rules:
+  - domain: wiki.etnolit.se
+    policy: one_factor
+ups_users:
+  gondor:
+    password: TjFygBqQ76WBBVpQXTMd
+    role: master
+  feanor:
+    password: 4CcLh7hdDPSqpwqtHdid
+    role: slave
+nas_groups:
+  - name: pirates
+nas_users:
+  - name: linus
+    password: qwerty
+    shell: /bin/bash
+    create_home: yes
+    uid: 1100
+    groups: admin,pirates
+    samba: yes
+x: y

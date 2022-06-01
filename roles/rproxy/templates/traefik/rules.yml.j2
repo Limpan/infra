@@ -1,0 +1,51 @@
+http:
+    routers:
+        router-hassio:
+            entryPoints:
+                - websecure
+            rule: "Host(`hass.{{ MAIN_DOMAIN }}`)"
+            service: service-hassio
+            tls:
+                certResolver: letsencrypt
+        
+        router-nextcloud:
+            entryPoints:
+                - websecure
+            rule: "Host(`cloud.{{ MAIN_DOMAIN }}`)"
+            service: service-nextcloud
+            tls:
+                certResolver: letsencrypt
+
+    services:
+        service-hassio:
+            loadBalancer:
+                servers:
+                - "http://172.16.0.222:8123/"
+        
+        service-nextcloud:
+            loadBalancer:
+                servers:
+                - "http://192.168.60.4/"
+
+    middlewares:
+        https-redirect:
+            redirectScheme:
+                scheme: https
+
+        authelia:
+            forwardAuth:
+                address: "http://authelia:9091/api/verify?rd=https://login.home.{{ MAIN_DOMAIN }}"
+
+        default-headers:
+            headers:
+            frameDeny: true
+            sslRedirect: true
+            browserXssFilter: true
+            contentTypeNosniff: true
+            forceSTSHeader: true
+            stsIncludeSubdomains: true
+            stsPreload: true
+            stsSeconds: 15552000
+            customFrameOptionsValue: SAMEORIGIN
+            customRequestHeaders:
+                X-Forwarded-Proto: https

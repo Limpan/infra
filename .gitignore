@@ -6,6 +6,8 @@
 .AppleDouble
 .LSOverride
 
+# Vagrant
+.vagrant
+
 # Ansible vault
 .vault-password
-vault.yaml

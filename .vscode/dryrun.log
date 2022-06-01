@@ -1,0 +1,4 @@
+make: Entering directory `/Users/linus/Development/infra'
+ansible-vault decrypt vars/vault.yaml
+make: Leaving directory `/Users/linus/Development/infra'
+ 

@@ -1,0 +1,9 @@
+---
+CONTAINER_PATH: /mnt/tank/containers
+UID: 1000
+GID: 1000
+ups_server_addr: 192.168.60.4
+ups_name: mainups
+ups_driver: usbhid-ups
+ups_port: /dev/ttyS0
+ups_desc: "Main system UPS."

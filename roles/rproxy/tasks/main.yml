@@ -1,0 +1,50 @@
+---
+- name: Ensure data folder exists.
+  file:
+    dest: "{{ CONTAINER_PATH }}/rproxy/{{ item }}"
+    state: directory
+    owner: "{{ UID }}"
+    group: "{{ GID }}"
+  loop:
+    - traefik
+    - authelia
+
+- name: Copy Traefik config.
+  template:
+    src: templates/traefik/traefik.yml.j2
+    dest: "{{ CONTAINER_PATH }}/rproxy/traefik/traefik.yml"
+    owner: "{{ UID }}"
+    group: "{{ GID }}"
+
+- name: Copy Traefik rules.
+  template:
+    src: templates/traefik/rules.yml.j2
+    dest: "{{ CONTAINER_PATH }}/rproxy/traefik/rules.yml"
+    owner: "{{ UID }}"
+    group: "{{ GID }}"
+
+- name: Copy Authelia user config.
+  template:
+    src: templates/authelia/users.yml.j2
+    dest: "{{ CONTAINER_PATH }}/rproxy/authelia/users.yml"
+    owner: "{{ UID }}"
+    group: "{{ GID }}"
+
+- name: Copy Authelia rules.
+  template:
+    src: templates/authelia/configuration.yml.j2
+    dest: "{{ CONTAINER_PATH }}/rproxy/authelia/configuration.yml"
+    owner: "{{ UID }}"
+    group: "{{ GID }}"
+
+- name: Copy docker-compose.yml.
+  copy:
+    src: "files/docker-compose.yml"
+    dest: "{{ CONTAINER_PATH }}/rproxy/docker-compose.yml"
+
+- name: Deploy Traefik with Docker Compose.
+  docker_compose:
+    project_src: "{{ CONTAINER_PATH }}/rproxy/"
+    files:
+    - docker-compose.yml
+    recreate: always

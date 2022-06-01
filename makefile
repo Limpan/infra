@@ -1,5 +1,5 @@
 decrypt:
-	ansible-vault decrypt vars/vault.yaml
+	ansible-vault decrypt vars/vault.yml
 
 encrypt:
-	ansible-vault encrypt vars/vault.yaml
+	ansible-vault encrypt vars/vault.yml
