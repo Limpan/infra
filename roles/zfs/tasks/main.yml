@@ -1,0 +1,3 @@
+---
+- name: Ensure ZFS utilities are installed.
+  apt: name=zfsutils-linux state=present

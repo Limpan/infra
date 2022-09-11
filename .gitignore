@@ -6,6 +6,9 @@
 .AppleDouble
 .LSOverride
 
+# Visual Studio Code
+.vscode
+
 # Vagrant
 .vagrant
 

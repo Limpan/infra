@@ -13,7 +13,7 @@ users:
     password: {{ u.password }}
     email: {{ u.email }}
     groups:
-  {% for g in u.groups %}
+{% for g in u.groups %}
       - {{ g }}
-  {% endfor %}
+{% endfor %}
 {% endfor %}

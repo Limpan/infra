@@ -1,0 +1,42 @@
+---
+- name: Ensure network bridging packages installed.
+  apt:
+    name:
+      - bridge-utils
+    state: present
+
+- name: Remove netplan folder.
+  file:
+    state: absent
+    path: /etc/netplan
+
+- name: Recreate netplan folder.
+  file:
+    state: directory
+    path: /etc/netplan
+    owner: root
+    group: root
+
+- name: Ensure network configuration present.
+  template:
+    src: templates/01-networking.yaml.j2
+    dest: /etc/netplan/01-networking.yaml
+
+- name: Count number of .yml files.
+  shell:
+    cmd: ls -l /etc/netplan/ | grep .yml | wc -l
+  register:
+    number_of_yml_files
+  changed_when: false
+  args:
+    warn: no
+    
+- name: Assert that no .yml files present.
+  fail:
+    msg: Netplan only recognizes .yaml files, .yml files present.
+  when: number_of_yml_files.stdout != "0"
+
+- name: Apply netplan.
+  command: netplan apply
+  async: 45
+  poll: 0

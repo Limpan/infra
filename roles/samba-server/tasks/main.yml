@@ -4,6 +4,7 @@
     name:
       - samba
       - samba-common
+      - smbclient
     state: present
 
 - name: Copy Samba configuration file.

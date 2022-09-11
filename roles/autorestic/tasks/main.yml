@@ -1,0 +1,47 @@
+---
+- name: Ensure dependencies are installed.
+  apt:
+    name:
+      - wget
+      - bzip2
+    state: present
+
+- name: Get latest restic release.
+  uri:                                                               
+    url: https://api.github.com/repos/restic/restic/releases/latest
+  register: json_response
+
+- name: Download latest version of restic.
+  get_url:
+    url: "{{ item.browser_download_url }}"
+    dest: /tmp/restic.bz2
+  loop: "{{ json_response.json.assets }}"
+  when: "'linux_amd64' in item.browser_download_url"
+  loop_control:
+    label: "{{ item.name }}"
+  register: archive
+
+# - name: Archive name.
+#   debug:
+#     var: archive
+
+- name: Install restic.
+  command:
+    src: "/tmp/restic.bz2"
+    dest: /tmp
+
+# - name: Get latest autorestic release.
+#   uri:                                                               
+#     url: https://api.github.com/repos/cupcakearmy/autorestic/releases/latest
+#     return_content: true
+#   register: json_response
+
+# - name: Download and install autorestic.
+#   unarchive:
+#     src: "{{ item.browser_download_url }}"
+#     dest: /usr/local/bin
+#     remote_src: yes
+#   loop: "{{ json_response.json.assets }}"
+#   when: "'linux_amd64' in item.browser_download_url"
+#   loop_control:
+#     label: "{{ item.name }}"

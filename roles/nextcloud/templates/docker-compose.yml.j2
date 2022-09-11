@@ -6,45 +6,47 @@ services:
     user: 999:999
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     volumes:
-      - /mnt/tank/containers/nextcloud/db:/var/lib/mysql
+      - /tank/containers/nextcloud/db:/var/lib/mysql
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD={{ nextcloud_db_root_password }}
       - MYSQL_PASSWORD={{ nextcloud_db_user_password }}
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud_admin
-    labels:
-      - traefik.enable=false
+#    labels:
+#      - traefik.enable=false
 
   app:
     image: nextcloud:22-apache
     links:
       - db
     volumes:
-      - /mnt/tank/containers/nextcloud/nc_instance:/var/www/html
-      - /mnt/tank/containers/nextcloud/data:/var/www/html/data
-      - /mnt/tank/containers/nextcloud/config:/var/www/html/config
-      - /mnt/tank/containers/nextcloud/apps:/var/www/html/apps
-      - /mnt/tank/containers/nextcloud/custom_apps:/var/www/html/custom_apps
+      - /tank/containers/nextcloud/nc_instance:/var/www/html
+      - /tank/containers/nextcloud/data:/var/www/html/data
+      - /tank/containers/nextcloud/config:/var/www/html/config
+      - /tank/containers/nextcloud/apps:/var/www/html/apps
+      - /tank/containers/nextcloud/custom_apps:/var/www/html/custom_apps
     restart: always
+    ports:
+      - "8080:80"
     environment:
       - VIRTUAL_HOST=cloud.etnolit.se
-    labels:
-      - traefik.http.routers.nextcloud.rule=Host(`cloud.etnolit.se`)
-      - traefik.http.routers.nextcloud.entrypoints=websecure
-      - traefik.http.routers.nextcloud.tls=true
-      - traefik.http.routers.nextcloud.tls.certresolver=lets-encrypt
-      - traefik.port=80
-      # Middlewares
-      - traefik.http.middlewares.nextcloudHeaders.headers.frameDeny=false
-      - traefik.http.middlewares.nextcloudHeaders.headers.sslRedirect=true
-      - traefik.http.middlewares.nextcloudHeaders.headers.forceSTSHeader=true
-      - traefik.http.middlewares.nextcloudHeaders.headers.stsIncludeSubdomains=true
-      - traefik.http.middlewares.nextcloudHeaders.headers.stsSeconds=315360000
-      - traefik.http.middlewares.nextcloudRedirect.redirectregex.regex=https://(.*)/.well-known/(card|cal)dav
-      - traefik.http.middlewares.nextcloudRedirect.redirectregex.regex=https://$$1/remote.php/dav/
-      # Apply middlewares
-      - traefik.http.routers.nextcloud.middlewares=nextcloudHeaders@docker,nextcloudRedirect@docker
+#    labels:
+#      - traefik.http.routers.nextcloud.rule=Host(`cloud.etnolit.se`)
+#      - traefik.http.routers.nextcloud.entrypoints=websecure
+#      - traefik.http.routers.nextcloud.tls=true
+#      - traefik.http.routers.nextcloud.tls.certresolver=lets-encrypt
+#      - traefik.port=80
+#      # Middlewares
+#      - traefik.http.middlewares.nextcloudHeaders.headers.frameDeny=false
+#      - traefik.http.middlewares.nextcloudHeaders.headers.sslRedirect=true
+#      - traefik.http.middlewares.nextcloudHeaders.headers.forceSTSHeader=true
+#      - traefik.http.middlewares.nextcloudHeaders.headers.stsIncludeSubdomains=true
+#      - traefik.http.middlewares.nextcloudHeaders.headers.stsSeconds=315360000
+#      - traefik.http.middlewares.nextcloudRedirect.redirectregex.regex=https://(.*)/.well-known/(card|cal)dav
+#      - traefik.http.middlewares.nextcloudRedirect.redirectregex.regex=https://$$1/remote.php/dav/
+#      # Apply middlewares
+#      - traefik.http.routers.nextcloud.middlewares=nextcloudHeaders@docker,nextcloudRedirect@docker
 
   cron:
     image: nextcloud:22-apache
@@ -55,5 +57,5 @@ services:
     depends_on:
       - db
       - app
-    labels:
-      - traefik.enable=false
+#    labels:
+#      - traefik.enable=false

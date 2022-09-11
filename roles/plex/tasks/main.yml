@@ -1,35 +1,28 @@
 ---
 - name: Ensure data folder exists.
   file:
-    dest: "{{ CONTAINER_PATH }}/plex"
+    dest: "{{ container_path }}/plex"
     state: directory
     owner: "{{ plex_uid }}"
-    group: "{{ pled_gid }}"
-
-- name: Ensure media folder exists.
-  file:
-    dest: "/mnt/tank/media"
-    state: directory
-    owner: "{{ plex_uid }}"
-    group: "{{ pled_gid }}"
+    group: "{{ plex_gid }}"
 
 - name: Ensure transcode folder exists.
   file:
-    dest: "/var/transcode"
+    dest: "/var/plex/transcode"
     state: directory
     owner: "{{ plex_uid }}"
     group: "{{ plex_gid }}"
 
 - name: Copy docker-compose.yml.
   template:
-    src: "files/docker-compose.yml"
-    dest: "{{ CONTAINER_PATH }}/plex/docker-compose.yml"
+    src: "templates/docker-compose.yml.j2"
+    dest: "{{ container_path }}/plex/docker-compose.yml"
     owner: "{{ plex_uid }}"
     group: "{{ plex_gid }}"
 
-- name: Deploy Nextcloud with Docker Compose.
+- name: Deploy Plex with Docker Compose.
   docker_compose:
-    project_src: "{{ CONTAINER_PATH }}/plex/"
+    project_src: "{{ container_path }}/plex/"
     files:
     - docker-compose.yml
     recreate: always

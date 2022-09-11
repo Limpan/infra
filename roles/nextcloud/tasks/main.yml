@@ -1,7 +1,7 @@
 ---
 - name: Ensure data folder exists.
   file:
-    dest: "{{ CONTAINER_PATH }}/nextcloud"
+    dest: "{{ container_path }}/nextcloud"
     state: directory
     owner: "{{ UID }}"
     group: "{{ GID }}"
@@ -9,11 +9,11 @@
 - name: Copy docker-compose.yml.
   template:
     src: "templates/docker-compose.yml.j2"
-    dest: "{{ CONTAINER_PATH }}/nextcloud/docker-compose.yml"
+    dest: "{{ container_path }}/nextcloud/docker-compose.yml"
 
 - name: Deploy Nextcloud with Docker Compose.
   docker_compose:
-    project_src: "{{ CONTAINER_PATH }}/nextcloud/"
+    project_src: "{{ container_path }}/nextcloud/"
     files:
     - docker-compose.yml
     recreate: always

@@ -23,6 +23,14 @@
 
 - name: Copy UPS daemon users file.
   template:
+    src: templates/upsd.conf.j2
+    dest: /etc/nut/upsd.conf
+    owner: root
+    group: nut
+  when: (nut_server is defined) and nut_server
+
+- name: Copy UPS daemon users file.
+  template:
     src: templates/upsd.users.j2
     dest: /etc/nut/upsd.users
     owner: root

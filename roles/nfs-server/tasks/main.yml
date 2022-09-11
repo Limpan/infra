@@ -1,7 +1,7 @@
 ---
 - name: Ensure container folder exists.
   file:
-    path: "/srv/nfs/containers"
+    path: /tank/containers
     state: directory
     owner: root
     group: root
@@ -13,8 +13,8 @@
       - nfs-kernel-server
 
 - name: Copy exports file.
-  copy:
-    src: "files/exports"
+  template:
+    src: "templates/exports.j2"
     dest: "/etc/exports"
   notify: reload nfs
 

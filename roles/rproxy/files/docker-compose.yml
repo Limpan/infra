@@ -1,35 +1,50 @@
 version: '2'
 
-services: 
-  traefik:
-    image: traefik:latest
+services:
+  caddy:
+    image: caddy:latest
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"
+      - "172.16.1.201:80:80"
+      - "172.16.1.201:443:443"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "/mnt/tank/containers/rproxy/traefik/traefik.yml:/etc/traefik/traefik.yml:ro"
-      - "/mnt/tank/containers/rproxy/traefik/rules.yml:/etc/traefik/rules.yml:ro"
-      - "/mnt/tank/containers/rproxy/traefik/acme.json:/acme.json"
+      - "/srv/containers/rproxy/caddy/Caddyfile:/etc/caddy/Caddyfile"
+      - "/srv/containers/rproxy/caddy/config:/config"
+      - "/srv/containers/rproxy/caddy/data:/data"
     networks:
       - web
 
   authelia:
     image: "authelia/authelia:latest"
     restart: unless-stopped
-    ports:
-      - "9091:9091"
     volumes:
-      - "/mnt/tank/containers/rproxy/authelia/configuration.yml:/config/configuration.yml"
-      - "/mnt/tank/containers/rproxy/authelia/users.yml:/config/users.yml"
+      - "/srv/containers/rproxy/authelia/configuration.yml:/config/configuration.yml"
+      - "/srv/containers/rproxy/authelia/users.yml:/config/users.yml"
     networks:
       - web
     environment:
-      TZ: Stockholm/Europe
+      - TZ=Stockholm/Europe
+
+  heimdall:
+    image: linuxserver/heimdall:latest
+    restart: unless-stopped
+    environment:
+      - PUID={{ UID }}
+      - PGID={{ GID }}
+      - TZ=Europe/Stockholm
+    volumes:
+      - "/srv/containers/rproxy/heimdall:/config"
+    networks:
+      - web
+
+  gollum:
+    image: gollumorg/gollum:5
+    restart: unless-stopped
+    volumes:
+      - /srv/containers/rproxy/gollum/wiki:/wiki
+    networks:
+      - web
 
 networks:
   web:
-    external:
-      name: "web"
+    name: "web"

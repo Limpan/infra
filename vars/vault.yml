@@ -1,18 +1,36 @@
 ---
 MAIN_DOMAIN: etnolit.se
-AUTHELIA_URL: auth.home.etnolit.se
+AUTHELIA_URL: login.home.etnolit.se
 AUTHELIA_JWT_SECRET: UPVZQhDYGymS7LwgACLFrMkZuHxpaVi7GpXeiHbBzu9jKeL2rz5p8XhmnQS6UGNb
 AUTHELIA_ENCRYPTION_KEY: GP2pdEBxWbsGbN7teFukMnJmyEHcL5NWgf4PbBimp3MUMKjmqUJcR4f2xGMFXFnH
 authelia_users:
   - username: linus
     displayname: Linus Törngren
-    password: $argon2id$v=19$m=65536,t=1,p=8$amhVRzZsTGtjNjdvTkM5QQ$DoxEr9D0+qG5f8947sJEYKyBjfS+CfQZzbKl07MTZ2g
+    password: $argon2id$v=19$m=65536,t=1,p=8$b1Nsc0hLUlNzbGREMmRlRg$wD9/TNjaqh5TnhPquI6wlYTVDMMG5waqHTE5HZpiCjY
     email: linus@etnolit.se
     groups:
       - admin
+      - user
+  - username: annika
+    displayname: Annika Törngren
+    password: $argon2id$v=19$m=65536,t=3,p=4$NW0rNjJDZDBUd2M3OFdQdg$lvqaXzcCpLal4PbogSZapbSekdixczW91uVNJ43n6sA
+    email: annika@esmeli.se
+    groups:
+      - user
 authelia_rules:
+  - domain: home.etnolit.se
+    policy: one_factor
+  - domain: cloud.etnolit.se
+    policy: one_factor
+  - domain: hass.etnolit.se
+    policy: one_factor
   - domain: wiki.etnolit.se
     policy: one_factor
+  - domain: mc.etnolit.se
+    policy: one_factor
+  - domain: recipes.etnolit.se
+    policy: one_factor
+
 ups_users:
   gondor:
     password: TjFygBqQ76WBBVpQXTMd
@@ -30,8 +48,8 @@ nas_users:
     password: qwerty
     shell: /bin/bash
     create_home: yes
-    uid: 1100
-    groups: admin,pirates
+    uid: 1000
+    groups: sudo,pirates
     samba: yes
   - name: plex
     password: plex
@@ -43,6 +61,15 @@ nas_users:
 
 plex_uid: 1200
 plex_gid: 1200
+plex_share_password: plex
 
 nextcloud_db_root_password: HUNTING-FAIL-charge-young
 nextcloud_db_user_password: teach-INCH-EGGS-course
+
+tandoor_secret_key: 1b4JCDwJHdNBXUBHsQxdch66mXWgMV5A34WEkB/KjY88cCjL0g
+tandoor_db_password: jailbreak-pentagon-fossil-divided
+
+influxdb_admin_password: ambush-lumpiness-sheet-sinister
+influxdb_telegraf_token: HHGTTX4CJqAFhCnp5mBtbHpCYixaFFXWrZnjHin55vlgZT3MBF07-LGf0TRHUHz0LM8lpbdzh8ouSYlJ0ruuKQ==
+
+frigate_rtsp_password: BL6sHXXthTS6w8

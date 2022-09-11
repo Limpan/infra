@@ -101,7 +101,7 @@
 
 - name: Ensure folder for docker-compose exists.
   file: 
-    dest: "{{ CONTAINER_PATH }}"
+    dest: "{{ container_path }}"
     state: directory
     owner: root
     group: root
