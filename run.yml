@@ -17,13 +17,12 @@
       tags: system
     - role: docker
       vars:
-        docker_compose_version: "2.5.1"
+        docker_compose_version: "2.20.2"
       tags: docker
     - role: kvm
       tags: kvm
-    - role: telegraf
-      tags: telegraf
-        
+    # - role: telegraf
+    #   tags: telegraf
 
 #
 #  Tasks and roles for gondor
@@ -84,8 +83,8 @@
       tags: plex
     - role: dashboard
       tags: dashboard
-    - role: autorestic
-      tags: restic
+    # - role: autorestic
+    #   tags: restic
     - role: frigate
       tags: frigate
 

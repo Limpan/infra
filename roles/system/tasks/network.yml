@@ -22,19 +22,11 @@
     src: templates/01-networking.yaml.j2
     dest: /etc/netplan/01-networking.yaml
 
-- name: Count number of .yml files.
-  shell:
-    cmd: ls -l /etc/netplan/ | grep .yml | wc -l
-  register:
-    number_of_yml_files
-  changed_when: false
-  args:
-    warn: no
-    
 - name: Assert that no .yml files present.
-  fail:
-    msg: Netplan only recognizes .yaml files, .yml files present.
-  when: number_of_yml_files.stdout != "0"
+  shell:
+    cmd: |
+      [ $(find /etc/netplan -maxdepth 1 -name '*.yml' | wc -l) -eq "0" ]
+  when: true
 
 - name: Apply netplan.
   command: netplan apply
