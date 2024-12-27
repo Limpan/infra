@@ -1,0 +1,40 @@
+---
+- name: Append SWERTY layout to /usr/share/X11/xkb/symbols/se
+  blockinfile:
+    path: /usr/share/X11/xkb/symbols/se
+    block: "{{ lookup('file', 'roles/swerty/files/se') }}"
+    marker: "// {mark} LAYOUT MANAGED BY ANSIBLE"
+
+- name: Add variant to /usr/share/X11/xkb/rules/evdev.xml
+  blockinfile:
+    path: /usr/share/X11/xkb/rules/evdev.xml
+    block: |
+      <variant>
+        <configItem>
+          <name>swerty</name>
+          <description>Swerty</description>
+        </configItem>
+      </variant>
+    marker: "<!-- {mark} VARIANT MANAGED BY ANSIBLE -->"
+    insertafter: "(?ms)^        <!-- Keyboard indicator for Swedish layouts -->(.*?)</configItem>$"
+
+- name: Check if variant present in /usr/share/X11/xkb/rules/evdev.lst
+  lineinfile:
+    state: absent
+    path: /usr/share/X11/xkb/rules/evdev.lst
+    regexp: "swerty"
+  check_mode: true
+  changed_when: false # This just makes things look prettier in the logs
+  register: swerty_check
+
+- name: Add variant to /usr/share/X11/xkb/rules/evdev.lst
+  lineinfile:
+    state: present
+    path: /usr/share/X11/xkb/rules/evdev.lst
+    line: "  swerty          se: Swerty"
+    insertafter: "! variant"
+  when: swerty_check.found == 0
+
+- name: Reconfigure xkb-data
+  become: yes
+  shell: dpkg-reconfigure xkb-data
