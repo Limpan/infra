@@ -1,6 +1,23 @@
-version: "3"
-
 services:
+    tandoor-ts:
+        image: tailscale/tailscale:latest
+        container_name: tandoor-ts
+        hostname: tandoor
+        environment:
+            - TS_AUTH_KEY={{ TAILSCALE_AUTHKEY }}?ephemeral=false
+            - TS_EXTRA_ARGS=--advertise-tags=tag:container
+            - TS_STATE_DIR=/var/lib/tailscale
+            - TS_USERSPACE=false
+        volumes:
+            - ./tailscale:/config
+            - tandoor-ts:/var/lib/tailscale
+        devices:
+            - /dev/net/tun
+        cap_add:
+            - net_admin
+            - sys_module
+        restart: unless-stopped
+
     db_recipes:
         restart: always
         image: postgres:15-alpine
@@ -23,18 +40,20 @@ services:
 
     nginx_recipes:
         image: nginx:mainline-alpine
+        network_mode: service:tandoor-ts
+        depends_on:
+            - tandoor-ts
+            - web_recipes
         restart: always
-        ports:
-            - 8001:80
         env_file:
             - ./.env
-        depends_on:
-            - web_recipes
         volumes:
             - nginx_config:/etc/nginx/conf.d:ro
             - staticfiles:/static:ro
             - ./mediafiles:/media:ro
 
 volumes:
-  nginx_config:
-  staticfiles:
+    tandoor-ts:
+        driver: local
+    nginx_config:
+    staticfiles:

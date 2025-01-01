@@ -4,6 +4,7 @@
     dest: "{{ container_path }}/tandoor/{{ item }}"
     state: directory
   loop:
+    - tailscale
     - postgresql
     - mediafiles
 
