@@ -1,0 +1,27 @@
+---
+- name: Ensure data folders exist.
+  file:
+    dest: "{{ container_path }}/pinchflat/{{ item }}"
+    state: directory
+    owner: "{{ pinchflat_uid }}"
+    group: "{{ pinchflat_gid }}"
+  loop:
+    - config
+    - tailscale
+
+- name: Copy tailscale ts.json file.
+  copy:
+    src: files/ts.json
+    dest: "{{ container_path }}/pinchflat/tailscale/ts.json"
+
+- name: Copy docker-compose.yml.
+  template:
+    src: "templates/docker-compose.yml.j2"
+    dest: "{{ container_path }}/pinchflat/docker-compose.yml"
+
+- name: Deploy Pinchflat with Docker Compose.
+  community.docker.docker_compose_v2:
+    project_src: "{{ container_path }}/pinchflat/"
+    files:
+      - docker-compose.yml
+    recreate: always

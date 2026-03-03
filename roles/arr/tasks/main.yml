@@ -1,0 +1,24 @@
+---
+- name: Ensure main data folder exists.
+  file:
+    dest: "{{ container_path }}/arr"
+    state: directory
+
+- name: Ensure application data folders exist.
+  file:
+    dest: "{{ container_path }}/arr/{{ item }}"
+    state: directory
+  loop:
+    - sonarr
+
+- name: Copy docker-compose.yml.
+  template:
+    src: "templates/docker-compose.yml.j2"
+    dest: "{{ container_path }}/arr/docker-compose.yml"
+
+- name: Deploy applications with Docker Compose.
+  community.docker.docker_compose_v2:
+    project_src: "{{ container_path }}/arr/"
+    files:
+      - docker-compose.yml
+    recreate: always

@@ -1,0 +1,40 @@
+services:
+  pinchflat:
+    image: ghcr.io/kieraneglin/pinchflat:latest
+    container_name: pinchflat
+    hostname: pinchflat-server
+    user: {{ pinchflat_uid }}:{{ pinchflat_gid }}
+    ports:
+      - 8945:8945
+    environment:
+      - TZ=Europe/Stockholm
+    volumes:
+      - {{ container_path }}/pinchflat/config:/config
+      - type: bind
+        source: /mnt/apoc/media/youtube
+        target: /downloads
+    restart: unless-stopped
+
+  pinchflat-ts:
+    image: tailscale/tailscale:latest
+    container_name: pinchflat-ts
+    hostname: pinchflat
+    environment:
+      - TS_AUTH_KEY={{ TAILSCALE_AUTHKEY }}?ephemeral=false
+      - TS_EXTRA_ARGS=--advertise-tags=tag:container
+      - TS_SERVE_CONFIG=/config/ts.json
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_USERSPACE=false
+    volumes:
+      - {{ container_path }}/pinchflat/tailscale:/config
+      - pinchflat-ts:/var/lib/tailscale
+    devices:
+      - /dev/net/tun
+    cap_add:
+      - net_admin
+      - sys_module
+    restart: unless-stopped
+
+volumes:
+  pinchflat-ts:
+    driver: local

@@ -6,6 +6,7 @@ services:
         environment:
             - TS_AUTH_KEY={{ TAILSCALE_AUTHKEY }}?ephemeral=false
             - TS_EXTRA_ARGS=--advertise-tags=tag:container
+            - TS_SERVE_CONFIG=/config/ts.json
             - TS_STATE_DIR=/var/lib/tailscale
             - TS_USERSPACE=false
         volumes:

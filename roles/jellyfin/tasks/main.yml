@@ -1,0 +1,28 @@
+---
+- name: Ensure data folders exist.
+  file:
+    dest: "{{ container_path }}/jellyfin/{{ item }}"
+    state: directory
+    owner: "{{ jellyfin_uid }}"
+    group: "{{ jellyfin_gid }}"
+  loop:
+    - jellyfin/config
+    - jellyfin/cache
+    - tailscale
+
+- name: Copy tailscale ts.json file.
+  copy:
+    src: files/ts.json
+    dest: "{{ container_path }}/jellyfin/tailscale/ts.json"
+
+- name: Copy docker-compose.yml.
+  template:
+    src: "templates/docker-compose.yml.j2"
+    dest: "{{ container_path }}/jellyfin/docker-compose.yml"
+
+- name: Deploy Jellyfin with Docker Compose.
+  community.docker.docker_compose_v2:
+    project_src: "{{ container_path }}/jellyfin/"
+    files:
+      - docker-compose.yml
+    recreate: always

@@ -1,6 +1,24 @@
-version: "2"
-
 services:
+  nextcloud-ts:
+    image: tailscale/tailscale:latest
+    container_name: nextcloud-ts
+    hostname: nextcloud
+    environment:
+      - TS_AUTH_KEY={{ TAILSCALE_AUTHKEY }}?ephemeral=false
+      - TS_EXTRA_ARGS=--advertise-tags=tag:container
+      - TS_SERVE_CONFIG=/config/ts.json
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_USERSPACE=false
+    volumes:
+      - ./tailscale:/config
+      - nextcloud-ts:/var/lib/tailscale
+    devices:
+      - /dev/net/tun
+    cap_add:
+      - net_admin
+      - sys_module
+    restart: unless-stopped
+
   db:
     image: mariadb:11.5
     user: 999:999
@@ -13,16 +31,15 @@ services:
       - MYSQL_PASSWORD={{ nextcloud_db_user_password }}
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud_admin
-    networks:
-      - internal
-#    labels:
-#      - traefik.enable=false
+      - MARIADB_AUTO_UPGRADE=1
 
   app:
-    image: nextcloud:29-apache
-    container_name: nextcloud
-    links:
+    image: nextcloud:32-apache
+    network_mode: service:nextcloud-ts
+    depends_on:
+      - nextcloud-ts
       - db
+    container_name: nextcloud
     volumes:
       - "{{ container_path }}/nextcloud/nc_instance:/var/www/html"
       - "{{ container_path }}/nextcloud/data:/var/www/html/data"
@@ -32,42 +49,16 @@ services:
     restart: always
     environment:
       - VIRTUAL_HOST=cloud.etnolit.se
-    networks:
-      - internal
-      - web
-#    labels:
-#      - traefik.http.routers.nextcloud.rule=Host(`cloud.etnolit.se`)
-#      - traefik.http.routers.nextcloud.entrypoints=websecure
-#      - traefik.http.routers.nextcloud.tls=true
-#      - traefik.http.routers.nextcloud.tls.certresolver=lets-encrypt
-#      - traefik.port=80
-#      # Middlewares
-#      - traefik.http.middlewares.nextcloudHeaders.headers.frameDeny=false
-#      - traefik.http.middlewares.nextcloudHeaders.headers.sslRedirect=true
-#      - traefik.http.middlewares.nextcloudHeaders.headers.forceSTSHeader=true
-#      - traefik.http.middlewares.nextcloudHeaders.headers.stsIncludeSubdomains=true
-#      - traefik.http.middlewares.nextcloudHeaders.headers.stsSeconds=315360000
-#      - traefik.http.middlewares.nextcloudRedirect.redirectregex.regex=https://(.*)/.well-known/(card|cal)dav
-#      - traefik.http.middlewares.nextcloudRedirect.redirectregex.regex=https://$$1/remote.php/dav/
-#      # Apply middlewares
-#      - traefik.http.routers.nextcloud.middlewares=nextcloudHeaders@docker,nextcloudRedirect@docker
 
   cron:
-    image: nextcloud:29-apache
+    image: nextcloud:32-apache
     restart: always
     volumes_from:
       - app
     entrypoint: /cron.sh
     depends_on:
-      - db
       - app
-    networks:
-      - internal
-#    labels:
-#      - traefik.enable=false
 
-networks:
-  internal:
-  web:
-    name: web
-    external: true
+volumes:
+  nextcloud-ts:
+    driver: local

@@ -15,7 +15,7 @@
 
 - name: Ensure additional dependencies are installed.
   apt:
-    name: 
+    name:
       - gnupg
       - curl
     state: present
@@ -51,6 +51,22 @@
       - containerd.io
       - docker-compose-plugin
 
+- name: Docker daemon.json configuration.
+  copy:
+    dest: /etc/docker/daemon.json
+    content: |
+      {
+        "log-driver": "json-file",
+        "log-opts": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      }
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart docker
+
 - name: Ensure docker daemon is running and started on boot.
   service:
     name: docker
@@ -63,44 +79,8 @@
     state: present
     gid: 2000
 
-- name: Install pip. 
-  apt:
-    name:
-      - python3-pip
-
-- name: Install Python packages.
-  pip:
-    name: 
-    - docker
-    - docker-compose
-    state: present
-
-- name: Check current docker-compose version.
-  command: docker-compose --version
-  register: docker_compose_version_str
-  changed_when: false
-  failed_when: false
-  check_mode: no
-
-- name: Set docker-compose version variable.
-  set_fact:
-    docker_compose_current_version: "{{ docker_compose_version_str.stdout | regex_search('(\\d+(\\.\\d+)+)') }}"
-    when:
-      - docker_compose_version.stdout is defined
-
-- name: Install or upgrade docker-compose.
-  get_url:
-    url: "https://github.com/docker/compose/releases/download/v{{ docker_compose_version }}/docker-compose-linux-x86_64"
-    checksum: "sha256:https://github.com/docker/compose/releases/download/v{{ docker_compose_version }}/docker-compose-linux-x86_64.sha256"
-    dest: /usr/local/bin/docker-compose
-    mode: 'a+x'
-    force: yes
-  when: >
-    docker_compose_current_version == ""
-    or docker_compose_current_version is version(docker_compose_version,'<') 
-
-- name: Ensure folder for docker-compose exists.
-  file: 
+- name: Ensure folder for docker containers exists.
+  file:
     dest: "{{ container_path }}"
     state: directory
     owner: root

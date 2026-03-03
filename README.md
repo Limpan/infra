@@ -8,7 +8,14 @@ Install git hooks by running `./git-init.sh`.
 ## Bootstrap machines
 Define TailScale API key in `TAILSCALE_KEY` and run
 
-`ansible-playbook bootstrap.yml --extra-vars "target=bombur" --user linus --ask-become-pass`
+`ansible-playbook bootstrap.yml --limit <machine> --ask-pass --ask-become-pass`
+
+## Vault
+
+`make encrypt`
+
+`make decrypt`
+
 
 ## Credits
 https://github.com/ironicbadger/infra

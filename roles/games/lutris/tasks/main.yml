@@ -1,0 +1,19 @@
+---
+- name: Install Flatpak
+  apt:
+    name: flatpak
+    state: present
+
+- name: Add the flathub flatpak repository remote
+  community.general.flatpak_remote:
+    name: flathub
+    state: present
+    flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+    method: system
+
+- name: Install Lutris flatpak
+  community.general.flatpak:
+    name: net.lutris.Lutris
+    remote: flathub
+    state: present
+    method: system

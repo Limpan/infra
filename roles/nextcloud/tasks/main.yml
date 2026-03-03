@@ -11,9 +11,19 @@
     src: "templates/docker-compose.yml.j2"
     dest: "{{ container_path }}/nextcloud/docker-compose.yml"
 
+- name: Ensure tailscale folder exists.
+  file:
+    dest: "{{ container_path }}/nextcloud/tailscale"
+    state: directory
+
+- name: Copy ts.json file.
+  copy:
+    src: files/ts.json
+    dest: "{{ container_path }}/nextcloud/tailscale/ts.json"
+
 - name: Deploy Nextcloud with Docker Compose.
   community.docker.docker_compose_v2:
     project_src: "{{ container_path }}/nextcloud/"
     files:
-    - docker-compose.yml
+      - docker-compose.yml
     recreate: always

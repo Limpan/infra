@@ -2,6 +2,42 @@
 #
 #  Tasks and roles for all hosts
 #
+- hosts: all
+  become: yes
+
+  vars_files:
+    - vars/vault.yml
+
+  roles:
+
+#
+#  Tasks and roles for all clients
+#
+- hosts: clients
+  become: yes
+
+  vars_files:
+    - vars/vault.yml
+
+  roles:
+    - role: swerty
+      tags: swerty
+    # - role: games/nvidia
+    #   tags: nvidia,games
+    - role: games/minecraft
+      tags: minecraft,games
+    - role: games/steam
+      tags: steam,games
+    - role: games/lutris
+      tags: lutris,games
+    - role: games/prism
+      tags: prism,games
+    - role: discord
+      tags: discord,games
+
+#
+#  Tasks and roles for all servers
+#
 - hosts: servers
   become: yes
 
@@ -36,10 +72,10 @@
   roles:
     - role: zfs
     - role: users
-    - role: nut
-      vars:
-      - nut_server: yes
-      tags: ups
+    # - role: nut
+    #   vars:
+    #   - nut_server: yes
+    #   tags: ups
     - role: unifi
       tags: unifi
     - role: nfs-server
@@ -49,33 +85,33 @@
         samba_shares:
           - name: Linus
             path: /tank/nas/linus
-            comment: 'Aargh! Pirates!'
-#            vfs_objects:
-#              - name: fruit
-#                options:
-#                  - name: resource
-#                    value: stream
-#                  - name: metadata
-#                    value: stream
-#                  - name: encoding
-#                    value: native
-#              - name: streams_xattr
-#              - name: shadow_copy_zfs
+            comment: "Aargh! Pirates!"
+            #            vfs_objects:
+            #              - name: fruit
+            #                options:
+            #                  - name: resource
+            #                    value: stream
+            #                  - name: metadata
+            #                    value: stream
+            #                  - name: encoding
+            #                    value: native
+            #              - name: streams_xattr
+            #              - name: shadow_copy_zfs
             group: pirates
             write_list: +pirates
           - name: Backup
             path: /tank/nas/backup
-            comment: 'Serious stuff.'
+            comment: "Serious stuff."
             group: ""
             write_list: linus
           - name: Photos
             path: /tank/nas/photos
-            comment: 'Lots of photos!'
+            comment: "Lots of photos!"
             group: ""
             write_list: linus
           - name: Plex
             path: /tank/media
-            comment: 'Media files'
+            comment: "Media files"
             group: plex
             write_list: plex
       tags: samba
@@ -85,17 +121,20 @@
       tags: nextcloud
     - role: plex
       tags: plex
+    - role: jellyfin
+      tags: jellyfin,mediacenter
     - role: tandoor
       tags: tandoor,web
     - role: dashboard
       tags: dashboard
-    # - role: autorestic
-    #   tags: restic
     - role: frigate
       tags: frigate
     - role: crafty
       tags: crafty
-
+    - role: arr
+      tags: arr,mediacenter
+    - role: pinchflat
+      tags: pinchflat,mediacenter
 #
 #  Tasks and roles for feanor
 #
@@ -117,3 +156,4 @@
 
 #     - role: crafty
 #       tags: crafty
+

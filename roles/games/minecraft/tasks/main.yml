@@ -1,0 +1,4 @@
+---
+- name: Install Minecraft
+  apt:
+    deb: https://launcher.mojang.com/download/Minecraft.deb

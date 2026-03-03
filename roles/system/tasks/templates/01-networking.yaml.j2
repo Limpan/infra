@@ -21,6 +21,10 @@ network:
       dhcp4: false
       interfaces: [ eno1 ]
 
+    briot:
+      dhcp4: false
+      interfaces: [ vlan.400 ]
+
   vlans:
     vlan.100:
       id: 100
@@ -37,6 +41,12 @@ network:
 
     vlan.300:
       id: 300
+      link: eno1
+      dhcp4: false
+      dhcp6: false
+
+    vlan.400:
+      id: 400
       link: eno1
       dhcp4: false
       dhcp6: false

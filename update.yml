@@ -1,13 +1,29 @@
 ---
 - hosts: servers
+  become: yes
+
   tasks:
     - name: Import SSH keys from GitHub.
-      authorized_key:  
+      authorized_key:
         user: "{{ ansible_user | default('linus') }}"
         state: present
         key: https://github.com/Limpan.keys
-    - name: Update all packages.
-      become: true
+
+- hosts: clients
+  become: yes
+
+  tasks:
+    - name: Update all snaps
+      command: snap refresh
+
+    - name: Update all flatpaks
+      command: flatpak update --noninteractive
+
+- hosts: all
+  become: yes
+
+  tasks:
+    - name: Update all apt packages
       package:
-        name: '*'
+        name: "*"
         state: latest

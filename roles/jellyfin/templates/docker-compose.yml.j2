@@ -1,0 +1,42 @@
+services:
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    hostname: jellyfin-server
+    user: {{ jellyfin_uid }}:{{ jellyfin_gid }}
+    ports:
+      - 8096:8096
+    volumes:
+      - {{ container_path }}/jellyfin/jellyfin/config:/config
+      - {{ container_path }}/jellyfin/jellyfin/cache:/cache
+      - type: bind
+        source: /mnt/apoc/media
+        target: /media
+    devices:
+      - /dev/dri:/dev/dri
+    restart: unless-stopped
+
+
+  jellyfin-ts:
+    image: tailscale/tailscale:latest
+    container_name: jellyfin-ts
+    hostname: jellyfin
+    environment:
+      - TS_AUTH_KEY={{ TAILSCALE_AUTHKEY }}?ephemeral=false
+      - TS_EXTRA_ARGS=--advertise-tags=tag:container
+      - TS_SERVE_CONFIG=/config/ts.json
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_USERSPACE=false
+    volumes:
+      - {{ container_path }}/jellyfin/tailscale:/config
+      - jellyfin-ts:/var/lib/tailscale
+    devices:
+      - /dev/net/tun
+    cap_add:
+      - net_admin
+      - sys_module
+    restart: unless-stopped
+
+volumes:
+  jellyfin-ts:
+    driver: local

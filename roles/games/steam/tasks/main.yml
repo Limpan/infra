@@ -1,0 +1,10 @@
+---
+- name: Remove Steam snap
+  snap:
+    name: steam
+    state: absent
+
+- name: Install Steam package
+  apt:
+    deb: https://cdn.fastly.steamstatic.com/client/installer/steam.deb
+    state: present

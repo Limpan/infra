@@ -1,19 +1,20 @@
 ---
 - hosts: all
-  gather_facts: false
+  vars_files:
+    - vars/vault.yml
+  become: yes
+  become_method: sudo
+  vars:
+    ansible_user: linus
 
   tasks:
     - name: Ensure ansible user exists and is sudoer.
       user:
-        name=ansible
-        groups=sudo
-        append=yes
-        createhome=yes
-        state=present
-        shell=/bin/bash
-        home=/home/ansible
-      become: yes
-      become_method: sudo
+        name: ansible
+        groups: sudo
+        shell: /bin/bash
+        create_home: yes
+        state: present
 
     - name: Ensure ~/.ssh exists.
       file:
@@ -22,16 +23,12 @@
         mode: 0755
         owner: ansible
         group: ansible
-      become: yes
-      become_method: sudo
 
     - name: Ensure ~/.ssh/authorized_keys exists.
       file:
         path: /home/ansible/.ssh/authorized_keys
         state: touch
         mode: 0755
-      become: yes
-      become_method: sudo
 
     - name: Ensure key is present in authorized_keys.
       authorized_key:
@@ -40,8 +37,6 @@
         state: present
       with_file:
         - ~/.ssh/id_ed25519_ansible.pub
-      become: yes
-      become_method: sudo
 
     - name: Ensure ansible user is allowed to escalate privileges.
       community.general.sudoers:
@@ -50,8 +45,6 @@
         user: ansible
         commands: ALL
         nopassword: yes
-      become: yes
-      become_method: sudo
 
     # - name: Set up TailScale
     #   hosts: all

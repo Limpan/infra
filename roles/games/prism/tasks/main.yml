@@ -1,0 +1,19 @@
+---
+- name: Install Flatpak
+  apt:
+    name: flatpak
+    state: present
+
+- name: Add the flathub flatpak repository remote
+  community.general.flatpak_remote:
+    name: flathub
+    state: present
+    flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+    method: system
+
+- name: Install Prism Launcher flatpak
+  community.general.flatpak:
+    name: org.prismlauncher.PrismLauncher
+    remote: flathub
+    state: present
+    method: system

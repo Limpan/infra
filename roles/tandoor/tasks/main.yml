@@ -18,9 +18,14 @@
     src: "templates/env.j2"
     dest: "{{ container_path }}/tandoor/.env"
 
+- name: Copy tailscale.json file.
+  copy:
+    src: files/ts.json
+    dest: "{{ container_path }}/tandoor/tailscale/ts.json"
+
 - name: Deploy Tandoor with Docker Compose.
   community.docker.docker_compose_v2:
     project_src: "{{ container_path }}/tandoor/"
     files:
-    - docker-compose.yml
+      - docker-compose.yml
     recreate: always

@@ -1,0 +1,28 @@
+# https://ubuntu.com/server/docs/nvidia-drivers-installation
+---
+- name: Set NVIDIA driver version
+  set_fact:
+    nvidia_driver_version: 470
+
+- name: Install NVIDIA kernel module
+  apt:
+    name: linux-modules-nvidia-{{ nvidia_driver_version }}-generic
+    state: present
+
+- name: Install NVIDIA driver
+  apt:
+    name: nvidia-driver-{{ nvidia_driver_version }}
+    state: present
+
+- name: Add i386 architecture
+  command: dpkg --add-architecture i386
+
+- name: Install i386 graphics library
+  apt:
+    name:
+      - libnvidia-gl-{{ nvidia_driver_version }}:i386
+    state: present
+    update_cache: true
+
+- name: Reboot system
+  ansible.builtin.reboot:
